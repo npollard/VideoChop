@@ -17,10 +17,9 @@ def plotSpectru(y,Fs):
  xlabel('Freq (Hz)')
  ylabel('|Y(freq)|')
 
-Fs = 44100;  # sampling rate
 
-rate,data=read('test.wav')
-y=data[:,1]
+Fs,data=read('test.wav')
+y=data[Fs*10:Fs*15,1]
 lungime=len(y)
 timp=len(y)/44100.
 t=linspace(0,timp,len(y))
