@@ -19,7 +19,7 @@ def plotSpectru(y,Fs):
 
 
 Fs,data=read('test.wav')
-y=data[Fs*10:Fs*15,1]
+y=data[Fs*110:,1]
 lungime=len(y)
 timp=len(y)/44100.
 t=linspace(0,timp,len(y))
