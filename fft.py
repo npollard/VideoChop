@@ -3,31 +3,21 @@ from scipy import fft, arange, ifft
 from numpy import sin, linspace, pi
 from scipy.io.wavfile import read,write
 
-def plotSpectru(y,Fs):
- n = len(y) # lungime semnal
- k = arange(n)
- T = n/Fs
- frq = k/T # two sides frequency range
- frq = frq[range(n/2)] # one side frequency range
-
- Y = abs(fft(y)) # fft computing and normalization
- Y = Y[range(n/2)]
+def plotAudio(data, fs, time):
+ y=data[fs * time:fs * (time + 1),1]
  
- plot(frq,Y,'r') # plotting the spectrum
+ t = linspace(time, time + 1, y.size)
+ subplot(2, 1, 1)
+ plot(t, y)
+ xlabel('Time')
+ ylabel('Amplitude')
+ 
+ subplot(2, 1, 2)
+ plot(abs(fft(y)))
  axis([0,3000,0,6000])
  xlabel('Freq (Hz)')
  ylabel('|Y(freq)|')
+ show()
 
-Fs,data=read('test.wav')
-y=data[:,1]
-lungime=len(y)
-timp=len(y)/44100.
-t=linspace(0,timp,len(y))
+(fs,data) = read('test.wav')
 
-subplot(2,1,1)
-plot(t,y)
-xlabel('Time')
-ylabel('Amplitude')
-subplot(2,1,2)
-plotSpectru(y,Fs)
-show()
