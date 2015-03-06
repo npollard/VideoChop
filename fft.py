@@ -13,11 +13,21 @@ def plotAudio(data, fs, time):
  ylabel('Amplitude')
  
  subplot(2, 1, 2)
- plot(abs(fft(y)))
- axis([0,3000,0,6000])
+ Y = abs(fft(y))
+ plot(Y)
+ printify(Y)
+ axis([0,3000,0,1000])
  xlabel('Freq (Hz)')
  ylabel('|Y(freq)|')
  show()
+
+def printify(Y):
+ l = []
+ for i in range(1,Y.size - 1):
+  if Y[i] > 200:
+    l.append(i)
+ print l
+  
 
 (fs,data) = read('test.wav')
 
