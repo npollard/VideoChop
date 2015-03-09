@@ -1,10 +1,11 @@
+import sys
 from pylab import plot, show, title, axis, xlabel, ylabel, subplot, savefig
 from scipy import fft, arange, ifft
-from numpy import sin, linspace, pi
+from numpy import array, sin, linspace, pi
 from scipy.io.wavfile import read,write
 
 def plotAudio(data, fs, time):
- y=data[fs * time:fs * (time + 1)]
+ y=data[fs * time:fs * (time + 1), 1]
  Y = abs(fft(y))
  
  t = linspace(time, time + 1, y.size)
@@ -39,7 +40,7 @@ def rate(data, fs):
  return l
 
 def rateSingle(data, fs, freq):
- duration = data.size/fs
+ duration = data[:].size/fs
  print "time:", duration, "seconds"
  l = []
  for t in range(1, duration - 2):
@@ -58,5 +59,15 @@ def filterTimes(l, threshold):
  print "times:", map(lambda y: y[0], filter(lambda x: x[1] > threshold, l))
 
 
-(fs,data) = read('rec_ub.wav')
+(fs,data) = read(sys.argv[1])
+if len(data.shape) > 1:
+  data = array(map(lambda x: x[0] + x[1], data))
+
+l = rateSingle(data, fs, 300)
+thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
+filterTimes(l, thresh)
+
+
+
+
 
