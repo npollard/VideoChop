@@ -1,4 +1,4 @@
-import sys, re
+import os, re, sys
 import subprocess as sp
 from pylab import plot, show, title, axis, xlabel, ylabel, subplot, savefig
 from scipy import fft, arange, ifft
@@ -98,6 +98,7 @@ videoPath = sys.argv[1]
 wavPath = getWavPath(videoPath)
 sp.call(["avconv", "-i", videoPath, "-ab", "160k", "-ac", "1", "-ar", "160000", "-vn", wavPath])
 (fs,data) = read(wavPath)
+os.remove(wavPath)
 
 l = rateSingle(data, fs, 300)
 thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
