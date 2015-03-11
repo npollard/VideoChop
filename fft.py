@@ -40,6 +40,7 @@ def rate(data, fs):
  print "ranges: [" + str(r00) + ":" + str(r01) + "] [" + str(r10) + ":" + str(r11) + "] [" + str(r20) + ":" + str(r21) + "]"
  return l
 
+
 def rateSingle(data, fs, freq):
  duration = data[:].size/fs
  print "time:", duration, "seconds"
@@ -55,13 +56,37 @@ def sortTimes(l):
  for t in sorted(l, key = lambda x: x[1]):
    print t
 
+
 def filterTimes(l, threshold):
  print "threshold: " + str(threshold)
  raw_times = map(lambda y: y[0], filter(lambda x: x[1] > threshold, l))
- print raw_times
+ times = []
+ for i in range(0, len(raw_times) - 1):
+  if (raw_times[i] + 1 != raw_times[i+1]):
+   times.append(raw_times[i])
+ times.append(raw_times.pop())
+ print "TIMES:", times
+ return times
 
+ 
 def getWavPath(videoPath):
  return re.match('([\w_-]+\.)\w+', videoPath).group(1) + "wav"
+
+
+def getChoppedPath(videoPath, i):
+  m = re.match('([\w_-]+)(\.\w+)', videoPath)
+  return m.group(1) + "_" + str(i).zfill(3) + m.group(2)
+
+
+def chopVideo(videoPath, times):
+ for i in range(0, len(times)):
+  start = 0;
+  if (i != 0):
+   start = times[i - 1]
+  choppedPath = getChoppedPath(videoPath, i)
+  print "CHOPPING: " + str(choppedPath) + " (" + str(start) + ", " + str(times[i]) + ")"
+
+
 
 videoPath = sys.argv[1]
 wavPath = getWavPath(videoPath)
@@ -73,9 +98,6 @@ if len(data.shape) > 1:
 
 l = rateSingle(data, fs, 300)
 thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
-filterTimes(l, thresh)
-
-
-
-
+times = filterTimes(l, thresh)
+chopVideo(videoPath, times)
 
