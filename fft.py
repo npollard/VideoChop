@@ -1,4 +1,5 @@
-import sys
+import sys, re
+import subprocess as sp
 from pylab import plot, show, title, axis, xlabel, ylabel, subplot, savefig
 from scipy import fft, arange, ifft
 from numpy import array, sin, linspace, pi
@@ -56,10 +57,17 @@ def sortTimes(l):
 
 def filterTimes(l, threshold):
  print "threshold: " + str(threshold)
- print "times:", map(lambda y: y[0], filter(lambda x: x[1] > threshold, l))
+ raw_times = map(lambda y: y[0], filter(lambda x: x[1] > threshold, l))
+ print raw_times
 
+def getWavPath(videoPath):
+ return re.match('([\w_-]+\.)\w+', videoPath).group(1) + "wav"
 
-(fs,data) = read(sys.argv[1])
+videoPath = sys.argv[1]
+wavPath = getWavPath(videoPath)
+sp.call(["avconv", "-i", videoPath, "-ab", "160k", "-ac", "1", "-ar", "160000", "-vn", wavPath])
+
+(fs,data) = read(wavPath)
 if len(data.shape) > 1:
   data = array(map(lambda x: x[0] + x[1], data))
 
