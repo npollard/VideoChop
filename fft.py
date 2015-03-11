@@ -78,14 +78,20 @@ def getChoppedPath(videoPath, i):
   return m.group(1) + "_" + str(i).zfill(3) + m.group(2)
 
 
+def timeify(time):
+ return str(time / (60 ** 2)).zfill(2) + ":" + str(time / 60 % 60).zfill(2) + ":" + str(time % 60).zfill(2)
+
+
 def chopVideo(videoPath, times):
  for i in range(0, len(times)):
   start = 0;
   if (i != 0):
    start = times[i - 1]
+  duration = times[i] - start
   choppedPath = getChoppedPath(videoPath, i)
-  print "CHOPPING: " + str(choppedPath) + " (" + str(start) + ", " + str(times[i]) + ")"
-
+  print "CHOPPING: " + str(choppedPath) + " (" + timeify(start) + ", " + timeify(duration) + "), (" + str(start) + ", " + str(times[i]) + ")"
+  sp.call(["avconv", "-i", videoPath, "-ss", timeify(start), "-t", timeify(duration), "-codec", "copy", choppedPath])
+ sp.call(["avconv", "-i", videoPath, "-ss", timeify(times.pop()), "-codec", "copy", getChoppedPath(videoPath, len(times) + 1)])
 
 
 videoPath = sys.argv[1]
