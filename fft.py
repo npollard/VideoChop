@@ -90,17 +90,14 @@ def chopVideo(videoPath, times):
   duration = times[i] - start
   choppedPath = getChoppedPath(videoPath, i)
   print "CHOPPING: " + str(choppedPath) + " (" + timeify(start) + ", " + timeify(duration) + "), (" + str(start) + ", " + str(times[i]) + ")"
-  sp.call(["avconv", "-i", videoPath, "-ss", timeify(start), "-t", timeify(duration), "-codec", "copy", choppedPath])
- sp.call(["avconv", "-i", videoPath, "-ss", timeify(times.pop()), "-codec", "copy", getChoppedPath(videoPath, len(times) + 1)])
+  sp.call(["avconv", "-i", videoPath, "-y", "-ss", timeify(start), "-t", timeify(duration), "-codec", "copy", choppedPath])
+ sp.call(["avconv", "-i", videoPath, "-y", "-ss", timeify(times.pop()), "-codec", "copy", getChoppedPath(videoPath, len(times) + 1)])
 
 
 videoPath = sys.argv[1]
 wavPath = getWavPath(videoPath)
 sp.call(["avconv", "-i", videoPath, "-ab", "160k", "-ac", "1", "-ar", "160000", "-vn", wavPath])
-
 (fs,data) = read(wavPath)
-if len(data.shape) > 1:
-  data = array(map(lambda x: x[0] + x[1], data))
 
 l = rateSingle(data, fs, 300)
 thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
