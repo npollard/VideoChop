@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'videochop_gui.ui'
 #
-# Created: Thu Mar 12 19:42:05 2015
+# Created: Fri Mar 13 17:02:07 2015
 #      by: PyQt4 UI code generator 4.10.4
 #
 # WARNING! All changes made in this file will be lost!
@@ -26,7 +26,7 @@ except AttributeError:
 class Ui_dialog(object):
     def setupUi(self, dialog):
         dialog.setObjectName(_fromUtf8("dialog"))
-        dialog.resize(396, 241)
+        dialog.resize(494, 241)
         self.horizontalLayoutWidget_3 = QtGui.QWidget(dialog)
         self.horizontalLayoutWidget_3.setGeometry(QtCore.QRect(130, 110, 171, 80))
         self.horizontalLayoutWidget_3.setObjectName(_fromUtf8("horizontalLayoutWidget_3"))
@@ -61,9 +61,9 @@ class Ui_dialog(object):
         self.input_path = QtGui.QLineEdit(self.horizontalLayoutWidget)
         self.input_path.setObjectName(_fromUtf8("input_path"))
         self.verticalLayout.addWidget(self.input_path)
-        self.output_path = QtGui.QLineEdit(self.horizontalLayoutWidget)
-        self.output_path.setObjectName(_fromUtf8("output_path"))
-        self.verticalLayout.addWidget(self.output_path)
+        self.o = QtGui.QLineEdit(self.horizontalLayoutWidget)
+        self.o.setObjectName(_fromUtf8("o"))
+        self.verticalLayout.addWidget(self.o)
         self.horizontalLayout_2.addLayout(self.verticalLayout)
         self.verticalLayout_2 = QtGui.QVBoxLayout()
         self.verticalLayout_2.setObjectName(_fromUtf8("verticalLayout_2"))
@@ -74,8 +74,12 @@ class Ui_dialog(object):
         self.browse_output.setObjectName(_fromUtf8("browse_output"))
         self.verticalLayout_2.addWidget(self.browse_output)
         self.horizontalLayout_2.addLayout(self.verticalLayout_2)
+        self.chop_button_ = QtGui.QPushButton(dialog)
+        self.chop_button_.setGeometry(QtCore.QRect(310, 190, 71, 41))
+        self.chop_button_.setObjectName(_fromUtf8("chop_button_"))
 
         self.retranslateUi(dialog)
+        QtCore.QObject.connect(self.chop_button_, QtCore.SIGNAL(_fromUtf8("clicked()")), dialog.close)
         QtCore.QMetaObject.connectSlotsByName(dialog)
 
     def retranslateUi(self, dialog):
@@ -86,4 +90,5 @@ class Ui_dialog(object):
         self.label.setText(_translate("dialog", "Output directory:", None))
         self.browse_input.setText(_translate("dialog", "Browse", None))
         self.browse_output.setText(_translate("dialog", "Browse", None))
+        self.chop_button_.setText(_translate("dialog", "CHOP!", None))
 

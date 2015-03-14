@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>396</width>
+    <width>494</width>
     <height>241</height>
    </rect>
   </property>
@@ -79,7 +79,7 @@
        <widget class="QLineEdit" name="input_path"/>
       </item>
       <item>
-       <widget class="QLineEdit" name="output_path"/>
+       <widget class="QLineEdit" name="o"/>
       </item>
      </layout>
     </item>
@@ -103,7 +103,37 @@
     </item>
    </layout>
   </widget>
+  <widget class="QPushButton" name="chop_button_">
+   <property name="geometry">
+    <rect>
+     <x>310</x>
+     <y>190</y>
+     <width>71</width>
+     <height>41</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CHOP!</string>
+   </property>
+  </widget>
  </widget>
  <resources/>
- <connections/>
+ <connections>
+  <connection>
+   <sender>chop_button_</sender>
+   <signal>clicked()</signal>
+   <receiver>dialog</receiver>
+   <slot>close()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>362</x>
+     <y>209</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>11</x>
+     <y>-14</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
 </ui>
