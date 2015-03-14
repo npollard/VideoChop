@@ -21,9 +21,10 @@ class StartQT4(QtGui.QMainWindow):
  
 
  def chop(self):
-  videoPath = 'out-1.ogv'
-  print "CHOP " + videoPath + "!"
-  chopify()
+  videoPath = self.ui.input_path.text()
+  freq = self.ui.tone_freq.text()
+  print "chopify(" + videoPath + ", " + freq + ")"
+  chopify(videoPath, int(freq))
 
 if __name__ == "__main__":
  app = QtGui.QApplication(sys.argv)

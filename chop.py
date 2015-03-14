@@ -5,42 +5,6 @@ from scipy import fft, arange, ifft
 from numpy import array, sin, linspace, pi
 from scipy.io.wavfile import read,write
 
-def plotAudio(data, fs, time):
- y=data[fs * time:fs * (time + 1), 1]
- Y = abs(fft(y))
- 
- t = linspace(time, time + 1, y.size)
- subplot(2, 1, 1)
- plot(t, y)
- xlabel('Time')
- ylabel('Amplitude')
- 
- subplot(2, 1, 2)
- plot(abs(fft(y)))
- #axis([0,3000,0,1000])
- xlabel('Freq (Hz)')
- ylabel('|Y(freq)|')
- show()
-
-
-def rate(data, fs):
- duration = data.size/fs
- print "time:", duration, "seconds"
- r00 = 670
- r01 = 680
- r10 = 1340
- r11 = 1360
- r20 = 2000
- r21 = 2050
- l = []
- for t in range(1, duration - 2):
-  y=data[fs * t:fs * (t + 1)]
-  Y = abs(fft(y))
-  l.append([t, sum(Y[r00:r01])/(r01 - r00) + sum(Y[r10:r11])/(r11 - r10) + sum(Y[r21:r20])/(r21 - r20)])
- print "ranges: [" + str(r00) + ":" + str(r01) + "] [" + str(r10) + ":" + str(r11) + "] [" + str(r20) + ":" + str(r21) + "]"
- return l
-
-
 def rateSingle(data, fs, freq):
  duration = data[:].size/fs
  print "time:", duration, "seconds"
@@ -70,12 +34,12 @@ def filterTimes(l, threshold):
 
  
 def getWavPath(videoPath):
- return re.match('([\w_-]+\.)\w+', videoPath).group(1) + "wav"
+ return re.match('(.*[/\][\w_-]+\.)\w+', videoPath).group(1) + "wav"
 
 
 def getChoppedPath(videoPath, i):
-  m = re.match('([\w_-]+)(\.\w+)', videoPath)
-  return m.group(1) + "_" + str(i).zfill(3) + m.group(2)
+ m = re.match('(.*[/\][\w_-]+)(\.\w+)', videoPath)
+ return m.group(1) + "_" + str(i).zfill(3) + m.group(2)
 
 
 def timeify(time):
@@ -93,14 +57,13 @@ def chopVideo(videoPath, times):
   sp.call(["avconv", "-i", videoPath, "-y", "-ss", timeify(start), "-t", timeify(duration), "-codec", "copy", choppedPath])
  sp.call(["avconv", "-i", videoPath, "-y", "-ss", timeify(times.pop()), "-codec", "copy", getChoppedPath(videoPath, len(times) + 1)])
 
-def chopify(): 
- videoPath = 'out-1.ogv'
+def chopify(videoPath, freq): 
  wavPath = getWavPath(videoPath)
  sp.call(["avconv", "-i", videoPath, "-ab", "160k", "-ac", "1", "-ar", "160000", "-vn", wavPath])
  (fs,data) = read(wavPath)
  os.remove(wavPath)
 
- l = rateSingle(data, fs, 300)
+ l = rateSingle(data, fs, freq)
  thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
  times = filterTimes(l, thresh)
  chopVideo(videoPath, times)
