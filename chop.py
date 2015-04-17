@@ -61,17 +61,21 @@ def chopVideo(videoPath, times):
  sp.call(["avconv", "-i", videoPath, "-y", "-ss", timeify(times.pop()), "-codec", "copy", getChoppedPath(videoPath, len(times) + 1)])
 
 def chopify(videoPath, freq1, freq2, freq3):
- if (isMTS(videoPath)):
-  print "IT'S MTS!"
- else:
-  wavPath = changeExtension(videoPath, "wav")
-  sp.call(["avconv", "-i", videoPath, "-ab", "160k", "-ac", "1", "-ar", "160000", "-vn", wavPath])
-  (fs,data) = read(wavPath)
-  os.remove(wavPath)
+ wavPath = changeExtension(videoPath, "wav")
+ sp.call(["avconv", "-i", videoPath, "-ab", "160k", "-ac", "1", "-ar", "160000", "-vn", wavPath])
+ (fs,data) = read(wavPath)
+ os.remove(wavPath)
 
-  l = rateSingle(data, fs, freq1, freq2, freq3)
-  thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
-  times = filterTimes(l, thresh)
+ l = rateSingle(data, fs, freq1, freq2, freq3)
+ thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
+ times = filterTimes(l, thresh)
+
+ if (isMTS(videoPath)):
+  mp4Path = changeExtension(videoPath, "mp4")
+  sp.call(["cp", videoPath, mp4Path])
+  chopVideo(mp4Path, times)
+  os.remove(mp4Path)
+ else:
   chopVideo(videoPath, times)
 
 
