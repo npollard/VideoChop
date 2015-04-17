@@ -18,8 +18,6 @@ class StartQT4(QtGui.QMainWindow):
   if isfile(self.filename):
    self.ui.input_path.setText(self.filename)
 
- 
-
  def chop(self):
   videoPath = self.ui.input_path.text()
   freq = self.ui.tone_freq.text()

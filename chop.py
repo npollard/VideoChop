@@ -1,6 +1,5 @@
 import os, re, sys
 import subprocess as sp
-from pylab import plot, show, title, axis, xlabel, ylabel, subplot, savefig
 from scipy import fft, arange, ifft
 from numpy import array, sin, linspace, pi
 from scipy.io.wavfile import read,write
@@ -64,7 +63,7 @@ def chopify(videoPath, freq):
  os.remove(wavPath)
 
  l = rateSingle(data, fs, freq)
- thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
+ thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/1.2
  times = filterTimes(l, thresh)
  chopVideo(videoPath, times)
 
