@@ -72,7 +72,7 @@ def chopify(videoPath, freq1, freq2, freq3):
 
  if (isMTS(videoPath)):
   mp4Path = changeExtension(videoPath, "mp4")
-  sp.call(["cp", videoPath, mp4Path])
+  sp.call(["avconv", "-i", videoPath, "-vcodec", "copy", "-acodec", "copy", mp4Path])
   chopVideo(mp4Path, times)
   os.remove(mp4Path)
  else:
