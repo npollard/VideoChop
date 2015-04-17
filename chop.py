@@ -4,14 +4,14 @@ from scipy import fft, arange, ifft
 from numpy import array, sin, linspace, pi
 from scipy.io.wavfile import read,write
 
-def rateSingle(data, fs, freq):
+def rateSingle(data, fs, freq1, freq2, freq3):
  duration = data[:].size/fs
  print "time:", duration, "seconds"
  l = []
  for t in range(1, duration - 2):
   y=data[fs * t:fs * (t + 1)]
   Y = abs(fft(y))
-  l.append([t, Y[freq]])
+  l.append([t, (Y[freq1] ** 2 + Y[freq2] ** 2 + Y[freq3] ** 2) ** (0.5)])
  return l
 
 
@@ -56,14 +56,14 @@ def chopVideo(videoPath, times):
   sp.call(["avconv", "-i", videoPath, "-y", "-ss", timeify(start), "-t", timeify(duration), "-codec", "copy", choppedPath])
  sp.call(["avconv", "-i", videoPath, "-y", "-ss", timeify(times.pop()), "-codec", "copy", getChoppedPath(videoPath, len(times) + 1)])
 
-def chopify(videoPath, freq): 
+def chopify(videoPath, freq1, freq2, freq3): 
  wavPath = getWavPath(videoPath)
  sp.call(["avconv", "-i", videoPath, "-ab", "160k", "-ac", "1", "-ar", "160000", "-vn", wavPath])
  (fs,data) = read(wavPath)
  os.remove(wavPath)
 
- l = rateSingle(data, fs, freq)
- thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/1.2
+ l = rateSingle(data, fs, freq1, freq2, freq3)
+ thresh = sorted(l, key = lambda x: x[1], reverse=True)[0][1]/2
  times = filterTimes(l, thresh)
  chopVideo(videoPath, times)
 
