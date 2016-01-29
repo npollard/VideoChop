@@ -31,7 +31,7 @@
         <configuration>
           <archive>
             <manifest>
-              <mainClass>com.nap.videochop.App</mainClass>
+              <mainClass>com.nap.videochop.VideoChop</mainClass>
             </manifest>
           </archive>
         </configuration>

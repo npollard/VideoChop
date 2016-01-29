@@ -1,0 +1,2 @@
+ffmpeg -i Desktop/20160112_161809.mp4 -vf "blackdetect=d=.2:pix_th=.5" -an -f null -
+
