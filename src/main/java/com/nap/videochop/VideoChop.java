@@ -27,17 +27,22 @@ public class VideoChop {
     }
     
     private static class VideoChopper {
+        private double blackDuration, blackThresh;
+
+        public VideoChopper(double blackDuration, double blackThresh) {
+            this.blackDuration = blackDuration;
+            this.blackThresh = blackThresh;
+        }
 
         public void chop() {
             Runtime runtime = Runtime.getRuntime();
             try {
-                //Process blackDetectProc = runtime.exec("ffmpeg -i /home/nelson/Desktop/20160112_161809.mp4 -vf 'blackdetect=d=.2:pix_th=.5' -an -f null -");
-                Process blackDetectProc = runtime.exec("ffmpeg -i /home/nelson/Desktop/20160112_161809.mp4 -vf blackdetect=d=.2 -f null -");
+                String cmd = "ffmpeg -i /home/nelson/Desktop/20160112_161809.mp4 -vf blackdetect=d=" + blackDuration + ":pix_th=" + blackThresh + " -f null -";
+                Process blackDetectProc = runtime.exec(cmd);
                 StreamGobbler outGobbler = new StreamGobbler(blackDetectProc.getInputStream(), "STDOUT");
                 StreamGobbler errGobbler = new StreamGobbler(blackDetectProc.getErrorStream(), "STDERR");
                 outGobbler.start();
                 errGobbler.start();
- 
                 
             } catch (IOException e) {
                 System.err.println("ERROR: " + e.getLocalizedMessage());
@@ -47,7 +52,7 @@ public class VideoChop {
     }
 
     public static void main(String[] args) {
-        VideoChopper videoChopper = new VideoChopper();
+        VideoChopper videoChopper = new VideoChopper(.2, .5);
         videoChopper.chop();
 
     }
