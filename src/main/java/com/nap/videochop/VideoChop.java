@@ -31,7 +31,8 @@ public class VideoChop {
         public void chop() {
             Runtime runtime = Runtime.getRuntime();
             try {
-                Process blackDetectProc = runtime.exec("ffmpeg -i /home/nelson/Desktop/20160112_161809.mp4 -vf 'blackdetect=d=.2:pix_th=.5' -an -f null -");
+                //Process blackDetectProc = runtime.exec("ffmpeg -i /home/nelson/Desktop/20160112_161809.mp4 -vf 'blackdetect=d=.2:pix_th=.5' -an -f null -");
+                Process blackDetectProc = runtime.exec("ffmpeg -i /home/nelson/Desktop/20160112_161809.mp4 -vf blackdetect=d=.2 -f null -");
                 StreamGobbler outGobbler = new StreamGobbler(blackDetectProc.getInputStream(), "STDOUT");
                 StreamGobbler errGobbler = new StreamGobbler(blackDetectProc.getErrorStream(), "STDERR");
                 outGobbler.start();
