@@ -18,6 +18,6 @@ Java program to chop videos based on black frames.
 ```
 cd video_java
 mvn package
-java -jar target/videochop-2.1.jar
+java -jar target/videochop-2.1.jar [video filename]
 ```
 

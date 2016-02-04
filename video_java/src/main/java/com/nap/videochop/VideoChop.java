@@ -52,8 +52,13 @@ public class VideoChop {
     }
 
     public static void main(String[] args) {
+        if (args.length < 1) {
+            System.err.println("USAGE: java -jar videochop-2.1.jar [video filename]");
+            return;
+        }
+
         VideoChopper videoChopper = new VideoChopper(.2, .5);
-        videoChopper.chop("video/20160112_161809.mp4");
+        videoChopper.chop(args[0]);
 
     }
 
