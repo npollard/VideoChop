@@ -97,8 +97,8 @@ public class VideoChop extends Application {
                 System.out.println(cmd);
                 try {
                     Process chopProc = runtime.exec(cmd);
-                    StreamGobbler outGobbler = new StreamGobbler(chopProc.getOutputStream(), "STDOUT");
-                    StreamGobbler errGobbler = new StreamGobbler(chopProc.getErrorStream(), "STDERR");
+                    StreamGobbler outGobbler = new StreamGobbler(chopProc.getOutputStream(), "STDOUT " + i);
+                    StreamGobbler errGobbler = new StreamGobbler(chopProc.getErrorStream(), "STDERR " + i);
                     outGobbler.start();
                     errGobbler.start();
                 } catch (IOException e) {
@@ -124,7 +124,9 @@ public class VideoChop extends Application {
             try {
                 String cmd = "ffmpeg -i " + inputFile + " -vf blackdetect=d=" + blackDuration + ":pix_th=" + blackThresh + " -f null -";
                 Process blackDetectProc = runtime.exec(cmd);
+                StreamGobbler outGobbler = new StreamGobbler(blackDetectProc.getOutputStream(), "STDOUT");
                 StreamGobbler errGobbler = new StreamGobbler(blackDetectProc.getErrorStream(), "STDERR");
+                outGobbler.start();
                 FutureTask<ArrayList<String>> timesFuture = new FutureTask<ArrayList<String>>(errGobbler);
                 executor.execute(timesFuture);
                 ArrayList<String> times = timesFuture.get();
