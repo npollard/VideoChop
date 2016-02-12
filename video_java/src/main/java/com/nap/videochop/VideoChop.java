@@ -96,7 +96,11 @@ public class VideoChop extends Application {
                 String cmd = "ffmpeg -i " + inputFile + " -ss " + times.get(i) + " -c copy -to " + times.get(i + 1) + " " + inputFile + "." + i;
                 System.out.println(cmd);
                 try {
-                    runtime.exec(cmd);
+                    Process chopProc = runtime.exec(cmd);
+                    StreamGobbler outGobbler = new StreamGobbler(chopProc.getOutputStream(), "STDOUT");
+                    StreamGobbler errGobbler = new StreamGobbler(chopProc.getErrorStream(), "STDERR");
+                    outGobbler.start();
+                    errGobbler.start();
                 } catch (IOException e) {
                     System.err.println("ERROR: " + e.getLocalizedMessage());
                 }
