@@ -90,9 +90,8 @@ public class VideoChop extends Application {
 
         public void chop(String inputFile) {
             ExecutorService executor = Executors.newSingleThreadExecutor();
-            
-
             Runtime runtime = Runtime.getRuntime();
+
             try {
                 String cmd = "ffmpeg -i " + inputFile + " -vf blackdetect=d=" + blackDuration + ":pix_th=" + blackThresh + " -f null -";
                 Process blackDetectProc = runtime.exec(cmd);
@@ -103,9 +102,11 @@ public class VideoChop extends Application {
                 for (int i = 0; i < times.size(); i++) {
                     System.out.println("---------- " + times.get(i));
                 }
+                executor.shutdown();
             } catch (Exception e) {
                 System.err.println("ERROR: " + e.getLocalizedMessage());
             }
+
         }
 
     }
