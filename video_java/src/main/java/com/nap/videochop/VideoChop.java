@@ -14,20 +14,23 @@ public class VideoChop extends Application {
 
     @Override
     public void start(Stage primaryStage) {
+        final String inputFile = getParameters().getRaw().get(0);
+        final VideoChopper videoChopper = new VideoChopper(.2, .5);
+
         Button button = new Button();
-        button.setText("Hello");
+        button.setText("CHOP!");
         button.setOnAction(new EventHandler<ActionEvent>() {
             
             @Override
             public void handle(ActionEvent event) {
-                System.out.println("DON'T TOUCH ME!");
+                videoChopper.chop(inputFile);
             }
         });
         
         StackPane root = new StackPane();
         root.getChildren().add(button);
         Scene scene = new Scene(root, 100, 100);
-        primaryStage.setTitle("I AM A TITLE! HAHAHA!");
+        primaryStage.setTitle("VideoChop");
         primaryStage.setScene(scene);
         primaryStage.show();
     }
@@ -80,16 +83,13 @@ public class VideoChop extends Application {
     }
 
     public static void main(String[] args) {
-        launch(args);
-
         if (args.length < 1) {
             System.err.println("USAGE: java -jar videochop-2.1.jar [video filename]");
-            return;
+            System.exit(1);
         }
 
-        VideoChopper videoChopper = new VideoChopper(.2, .5);
-        videoChopper.chop(args[0]);
-
+        launch(args);
+        
     }
 
 }
