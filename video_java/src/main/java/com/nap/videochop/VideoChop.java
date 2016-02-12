@@ -2,6 +2,7 @@ package com.nap.videochop;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.concurrent.*;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import javafx.application.Application;
@@ -39,7 +40,7 @@ public class VideoChop extends Application {
     }
 
     // http://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html
-    private static class StreamGobbler extends Thread {
+    private static class StreamGobbler implements Callable {
         InputStream inputStream;
         String type;
 
@@ -48,7 +49,7 @@ public class VideoChop extends Application {
             this.type = type;
         }
 
-        public void run() {
+        public ArrayList<String> call() {
             ArrayList<String> times = new ArrayList<String>();
             Pattern blackstartPattern = Pattern.compile("black_start:([0-9.]+)");
 
@@ -71,16 +72,14 @@ public class VideoChop extends Application {
                 for (int i = 0; i < times.size(); i++) {
                     System.out.println("TIMES > " + times.get(i));
                 }
-
-                String cmd = "ffmpeg -i " + inputFile + " -ss "; // -ss t1 -c copy -to t2 outputfile
-                for (int i = 0; i < times.size() - 1; i++) {
-                    System.out.println(cmd + times.get(i) + " -c copy -to " + times.get(i + 1) + " " + inputFile + "." + i);
-                }
             }
+
+            return times;
 
         }
     }
-    
+
+
     private static class VideoChopper {
         private double blackDuration, blackThresh;
 
@@ -90,16 +89,21 @@ public class VideoChop extends Application {
         }
 
         public void chop(String inputFile) {
+            ExecutorService executor = Executors.newSingleThreadExecutor();
+            
+
             Runtime runtime = Runtime.getRuntime();
             try {
                 String cmd = "ffmpeg -i " + inputFile + " -vf blackdetect=d=" + blackDuration + ":pix_th=" + blackThresh + " -f null -";
                 Process blackDetectProc = runtime.exec(cmd);
-                StreamGobbler outGobbler = new StreamGobbler(blackDetectProc.getInputStream(), "STDOUT");
                 StreamGobbler errGobbler = new StreamGobbler(blackDetectProc.getErrorStream(), "STDERR");
-                outGobbler.start();
-                errGobbler.start();
-                
-            } catch (IOException e) {
+                FutureTask<ArrayList<String>> timesFuture = new FutureTask<ArrayList<String>>(errGobbler);
+                executor.execute(timesFuture);
+                ArrayList<String> times = timesFuture.get();
+                for (int i = 0; i < times.size(); i++) {
+                    System.out.println("---------- " + times.get(i));
+                }
+            } catch (Exception e) {
                 System.err.println("ERROR: " + e.getLocalizedMessage());
             }
         }
