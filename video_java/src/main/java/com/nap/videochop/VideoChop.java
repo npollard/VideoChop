@@ -1,6 +1,9 @@
 package com.nap.videochop;
 
 import java.io.*;
+import java.util.ArrayList;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -17,9 +20,9 @@ public class VideoChop extends Application {
         final String inputFile = getParameters().getRaw().get(0);
         final VideoChopper videoChopper = new VideoChopper(.2, .5);
 
-        Button button = new Button();
-        button.setText("CHOP!");
-        button.setOnAction(new EventHandler<ActionEvent>() {
+        Button chopButton = new Button();
+        chopButton.setText("CHOP!");
+        chopButton.setOnAction(new EventHandler<ActionEvent>() {
             
             @Override
             public void handle(ActionEvent event) {
@@ -28,7 +31,7 @@ public class VideoChop extends Application {
         });
         
         StackPane root = new StackPane();
-        root.getChildren().add(button);
+        root.getChildren().add(chopButton);
         Scene scene = new Scene(root, 100, 100);
         primaryStage.setTitle("VideoChop");
         primaryStage.setScene(scene);
@@ -46,13 +49,26 @@ public class VideoChop extends Application {
         }
 
         public void run() {
+            ArrayList<String> times = new ArrayList<String>();
+            Pattern blackstartPattern = Pattern.compile("black_start:([0-9.]+)");
+
             try {
                 InputStreamReader inputStreamReader = new InputStreamReader(inputStream);
                 BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
                 String line = null;
-                while ((line = bufferedReader.readLine()) != null) System.out.println(type + "> " + line);
+                while ((line = bufferedReader.readLine()) != null) {
+                    System.out.println(type + "> " + line);
+                    Matcher blackstartMatcher = blackstartPattern.matcher(line);
+                    if (blackstartMatcher.find()) {
+                        times.add(line.substring(blackstartMatcher.start(1), blackstartMatcher.end(1)));
+                    }
+                }
             } catch (IOException e) {
                 System.err.println("ERROR: " + e.getLocalizedMessage());
+            }
+
+            for (int i = 0; i < times.size(); i++) {
+                System.out.println("TIMES > " + times.get(i));
             }
         }
     }
