@@ -87,11 +87,23 @@ public class VideoChop extends Application {
         public Chopper(String inputFile, ArrayList<String> times) {
             this.inputFile = inputFile;
             this.times = times;
+            times.add(0, "0");
         }
 
         public void run() {
             Runtime runtime = Runtime.getRuntime();
-            String cmd = "ffmpeg -i " + inputFile + "
+            for (int i = 0; i < times.size() - 1; i++) {
+                String cmd = "ffmpeg -i " + inputFile + " -ss " + times.get(i) + " -c copy -to " + times.get(i + 1) + " " + inputFile + "." + i;
+                System.out.println(cmd);
+                try {
+                    runtime.exec(cmd);
+                } catch (IOException e) {
+                    System.err.println("ERROR: " + e.getLocalizedMessage());
+                }
+            }
+        }
+
+    }
 
     private static class VideoChopper {
         private double blackDuration, blackThresh;
