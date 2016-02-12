@@ -1,8 +1,36 @@
 package com.nap.videochop;
 
 import java.io.*;
+import javafx.application.Application;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.scene.Scene;
+import javafx.scene.control.Button;
+import javafx.scene.layout.StackPane;
+import javafx.stage.Stage;
 
-public class VideoChop {
+// http://docs.oracle.com/javase/8/javafx/get-started-tutorial/hello_world.htm
+public class VideoChop extends Application {
+
+    @Override
+    public void start(Stage primaryStage) {
+        Button button = new Button();
+        button.setText("Hello");
+        button.setOnAction(new EventHandler<ActionEvent>() {
+            
+            @Override
+            public void handle(ActionEvent event) {
+                System.out.println("DON'T TOUCH ME!");
+            }
+        });
+        
+        StackPane root = new StackPane();
+        root.getChildren().add(button);
+        Scene scene = new Scene(root, 100, 100);
+        primaryStage.setTitle("I AM A TITLE! HAHAHA!");
+        primaryStage.setScene(scene);
+        primaryStage.show();
+    }
 
     // http://www.javaworld.com/article/2071275/core-java/when-runtime-exec---won-t.html
     private static class StreamGobbler extends Thread {
@@ -52,6 +80,8 @@ public class VideoChop {
     }
 
     public static void main(String[] args) {
+        launch(args);
+
         if (args.length < 1) {
             System.err.println("USAGE: java -jar videochop-2.1.jar [video filename]");
             return;
