@@ -67,9 +67,17 @@ public class VideoChop extends Application {
                 System.err.println("ERROR: " + e.getLocalizedMessage());
             }
 
-            for (int i = 0; i < times.size(); i++) {
-                System.out.println("TIMES > " + times.get(i));
+            if (1 < times.size()) {
+                for (int i = 0; i < times.size(); i++) {
+                    System.out.println("TIMES > " + times.get(i));
+                }
+
+                String cmd = "ffmpeg -i " + inputFile + " -ss "; // -ss t1 -c copy -to t2 outputfile
+                for (int i = 0; i < times.size() - 1; i++) {
+                    System.out.println(cmd + times.get(i) + " -c copy -to " + times.get(i + 1) + " " + inputFile + "." + i);
+                }
             }
+
         }
     }
     
