@@ -80,6 +80,19 @@ public class VideoChop extends Application {
     }
 
 
+    private static class Chopper implements Runnable {
+        String inputFile;
+        ArrayList<String> times;
+
+        public Chopper(String inputFile, ArrayList<String> times) {
+            this.inputFile = inputFile;
+            this.times = times;
+        }
+
+        public void run() {
+            Runtime runtime = Runtime.getRuntime();
+            String cmd = "ffmpeg -i " + inputFile + "
+
     private static class VideoChopper {
         private double blackDuration, blackThresh;
 
@@ -102,6 +115,8 @@ public class VideoChop extends Application {
                 for (int i = 0; i < times.size(); i++) {
                     System.out.println("---------- " + times.get(i));
                 }
+
+                executor.execute(new Chopper(inputFile, times));
                 executor.shutdown();
             } catch (Exception e) {
                 System.err.println("ERROR: " + e.getLocalizedMessage());
