@@ -15,6 +15,7 @@ import javafx.stage.Stage;
 
 // http://docs.oracle.com/javase/8/javafx/get-started-tutorial/hello_world.htm
 public class VideoChop extends Application {
+    static ExecutorService threadPool;
 
     @Override
     public void start(Stage primaryStage) {
@@ -93,18 +94,35 @@ public class VideoChop extends Application {
         public void run() {
             Runtime runtime = Runtime.getRuntime();
             for (int i = 0; i < times.size() - 1; i++) {
-                String cmd = "ffmpeg -i " + inputFile + " -ss " + times.get(i) + " -c copy -to " + times.get(i + 1) + " " + inputFile + "." + i;
+                String cmd = "ffmpeg -i " + inputFile + " -ss " + times.get(i) + " -c copy -to " + times.get(i + 1) + " " + getOutputFilename(inputFile, i);
                 System.out.println(cmd);
                 try {
                     Process chopProc = runtime.exec(cmd);
-                    StreamGobbler outGobbler = new StreamGobbler(chopProc.getOutputStream(), "STDOUT " + i);
+                    StreamGobbler outGobbler = new StreamGobbler(chopProc.getInputStream(), "STDOUT " + i);
                     StreamGobbler errGobbler = new StreamGobbler(chopProc.getErrorStream(), "STDERR " + i);
-                    outGobbler.start();
-                    errGobbler.start();
-                } catch (IOException e) {
+                    FutureTask<ArrayList<String>> outFuture = new FutureTask<ArrayList<String>>(outGobbler);
+                    FutureTask<ArrayList<String>> errFuture = new FutureTask<ArrayList<String>>(errGobbler);
+                    VideoChop.threadPool.execute(outFuture);
+                    VideoChop.threadPool.execute(errFuture);
+                } catch (Exception e) {
                     System.err.println("ERROR: " + e.getLocalizedMessage());
                 }
             }
+
+            VideoChop.threadPool.shutdown();
+        }
+
+        private String getOutputFilename(String inputFile, int num) {
+            System.out.println("%%%%%%%%%%%%% " + inputFile);
+            Pattern filenamePattern = Pattern.compile(".*(\\.[\\w]+)");
+            Matcher filenameMatcher = filenamePattern.matcher(inputFile);
+            if (!filenameMatcher.find()) {
+                System.err.println("ERROR: malformed input filename: " + inputFile);
+                return "";
+            }
+
+            String ext = inputFile.substring(filenameMatcher.start(1), filenameMatcher.end(1));
+            return inputFile.substring(0, filenameMatcher.start(1) - 1) + "_" + num + ext;
         }
 
     }
@@ -118,24 +136,24 @@ public class VideoChop extends Application {
         }
 
         public void chop(String inputFile) {
-            ExecutorService executor = Executors.newSingleThreadExecutor();
+            VideoChop.threadPool = Executors.newCachedThreadPool();
             Runtime runtime = Runtime.getRuntime();
 
             try {
                 String cmd = "ffmpeg -i " + inputFile + " -vf blackdetect=d=" + blackDuration + ":pix_th=" + blackThresh + " -f null -";
                 Process blackDetectProc = runtime.exec(cmd);
-                StreamGobbler outGobbler = new StreamGobbler(blackDetectProc.getOutputStream(), "STDOUT");
+                StreamGobbler outGobbler = new StreamGobbler(blackDetectProc.getInputStream(), "STDOUT");
                 StreamGobbler errGobbler = new StreamGobbler(blackDetectProc.getErrorStream(), "STDERR");
-                outGobbler.start();
-                FutureTask<ArrayList<String>> timesFuture = new FutureTask<ArrayList<String>>(errGobbler);
-                executor.execute(timesFuture);
-                ArrayList<String> times = timesFuture.get();
+                FutureTask<ArrayList<String>> outFuture = new FutureTask<ArrayList<String>>(outGobbler);
+                FutureTask<ArrayList<String>> errFuture = new FutureTask<ArrayList<String>>(errGobbler);
+                VideoChop.threadPool.execute(outFuture);
+                VideoChop.threadPool.execute(errFuture);
+                ArrayList<String> times = errFuture.get();
                 for (int i = 0; i < times.size(); i++) {
                     System.out.println("---------- " + times.get(i));
                 }
 
-                executor.execute(new Chopper(inputFile, times));
-                executor.shutdown();
+                VideoChop.threadPool.execute(new Chopper(inputFile, times));
             } catch (Exception e) {
                 System.err.println("ERROR: " + e.getLocalizedMessage());
             }
